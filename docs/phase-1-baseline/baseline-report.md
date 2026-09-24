@@ -1,23 +1,88 @@
 # Baseline Report — Kelompok 11 (Fase 1: Hardening)
 
+**Mata Kuliah:** TEK1314 - Keamanan Siber
+**Skenario:** Simulasi serangan web server (SQL Injection & XSS)
+**Minggu:** 7 (Demo Progres — Hardening Review)
+
+---
+
 ## 1. Topologi Jaringan
-[Embed/gambarkan ulang topologi: Attacker–Switch–Router–Target, Monitoring via mirror port]
+
+*(Sisipkan screenshot/gambar `topology.png` di sini)*
+
+Topologi terdiri dari 3 entitas utama dalam satu subnet `192.168.11.0/24`, terhubung lewat Switch ke Router (gateway `192.168.11.1`):
+
+- **Attacker Node** (Kali Linux) — `192.168.11.100`
+- **Target Node** (Ubuntu Server, web app rentan SQLi/XSS) — `192.168.11.5`
+- **Monitoring Node** (Security Onion) — `192.168.11.200`, terhubung via mirror port pada switch untuk memantau seluruh segmen jaringan.
+
+---
 
 ## 2. Identitas Sistem
-| Node | Hostname | IP | OS |
-|---|---|---|---|
+
+| Node | Hostname | IP Address | OS |
+| --- | --- | --- | --- |
 | Target | SRV-WEB-KEL11 | 192.168.11.5 | Ubuntu Server |
-| Attacker | (isi) | 192.168.11.100 | Kali Linux |
-| Monitoring | (isi) | 192.168.11.200 | Security Onion |
+| Attacker | *(isi hostname)* | 192.168.11.100 | Kali Linux |
+| Monitoring | *(isi hostname)* | 192.168.11.200 | Security Onion |
+
+Verifikasi identitas dilakukan dengan:
+```bash
+hostnamectl
+ip a
+```
+*(Sisipkan screenshot output di sini)*
+
+---
 
 ## 3. Network Hardening
-[Screenshot `ufw status verbose`, jelaskan port yang dibuka dan alasannya]
+
+Firewall (UFW) dikonfigurasi pada Target Node dengan kebijakan default **deny incoming**, hanya membuka port yang diperlukan untuk operasional web server:
+
+| Port | Layanan | Alasan Dibuka |
+| --- | --- | --- |
+| 22/tcp | SSH | Akses administrasi jarak jauh |
+| 80/tcp | HTTP | Layanan web server utama |
+| 443/tcp | HTTPS | Layanan web server terenkripsi |
+
+Konfigurasi diverifikasi dengan:
+```bash
+sudo ufw status verbose
+```
+*(Sisipkan screenshot output di sini)*
+
+---
 
 ## 4. System Hardening
-[Screenshot service yang di-disable, bukti user non-root, bukti apt upgrade]
+
+- **Penonaktifan service tidak perlu:** *(sebutkan service apa saja yang di-disable, misal: bluetooth, cups, avahi-daemon)*
+- **User non-root:** dibuat user `analyst` dengan hak akses sudo, bukan login langsung sebagai root.
+- **Update security patch:**
+  ```bash
+  sudo apt update && sudo apt upgrade -y
+  ```
+
+*(Sisipkan screenshot bukti masing-masing di sini)*
+
+---
 
 ## 5. Logging Verification
-[Screenshot Sguil/Squert menampilkan event ICMP dari attacker ke target]
+
+Bukti bahwa Security Onion aktif merekam traffic jaringan:
+
+1. Traffic ICMP di-generate dari Attacker Node ke Target Node:
+   ```bash
+   ping -c 5 192.168.11.5
+   ```
+2. Dashboard **Sguil/Squert** di Security Onion menampilkan event dengan:
+   - Timestamp: *(isi)*
+   - IP asal: `192.168.11.100`
+   - IP tujuan: `192.168.11.5`
+
+*(Sisipkan screenshot dashboard Sguil/Squert di sini)*
+
+---
 
 ## 6. Kesimpulan Hardening
-[Ringkasan: sistem sudah siap diserang di fase berikutnya, karena firewall aktif, service dibatasi, dan monitoring bekerja]
+
+Berdasarkan hasil di atas, sistem Target Node (SRV-WEB-KEL11) telah diperkuat sebelum memasuki fase simulasi serangan: firewall aktif membatasi akses hanya pada port yang diperlukan, service yang tidak digunakan telah dinonaktifkan, akses administrasi menggunakan user non-root, dan Security Onion telah terverifikasi mampu merekam aktivitas jaringan secara real-time. Sistem dinyatakan siap untuk memasuki Fase 2 (Vulnerability Assessment).
