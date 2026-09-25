@@ -31,7 +31,8 @@ Verifikasi identitas dilakukan dengan:
 hostnamectl
 ip a
 ```
-*(Sisipkan screenshot output di sini)*
+<img width="1917" height="1077" alt="image" src="https://github.com/user-attachments/assets/b79dcc9e-282d-4bab-86e7-1b52acf36cea" />
+
 
 ---
 
@@ -49,7 +50,8 @@ Konfigurasi diverifikasi dengan:
 ```bash
 sudo ufw status verbose
 ```
-*(Sisipkan screenshot output di sini)*
+<img width="1917" height="1077" alt="image" src="https://github.com/user-attachments/assets/11d9695b-9218-4360-b7ce-abd2341089e6" />
+
 
 ---
 
@@ -62,7 +64,11 @@ sudo ufw status verbose
   sudo apt update && sudo apt upgrade -y
   ```
 
-*(Sisipkan screenshot bukti masing-masing di sini)*
+<img width="1917" height="1077" alt="image" src="https://github.com/user-attachments/assets/04be2e3c-59ea-41cf-be86-287aeea0ee1d" />
+
+<img width="1917" height="1077" alt="image" src="https://github.com/user-attachments/assets/fc9da532-d6a8-4318-a5f8-53b014601473" />
+
+
 
 ---
 
