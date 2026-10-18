@@ -8,7 +8,8 @@
 
 ## 1. Topologi Jaringan
 
-*(Sisipkan screenshot/gambar `topology.png` di sini)*
+<img width="424" height="343" alt="image" src="https://github.com/user-attachments/assets/5e99c375-b2be-49ce-afd1-476679236789" />
+
 
 Topologi terdiri dari 3 entitas utama dalam satu subnet `192.168.11.0/24`
 
