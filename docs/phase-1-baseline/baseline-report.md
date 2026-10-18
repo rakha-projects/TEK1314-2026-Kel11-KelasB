@@ -10,11 +10,11 @@
 
 *(Sisipkan screenshot/gambar `topology.png` di sini)*
 
-Topologi terdiri dari 3 entitas utama dalam satu subnet `192.168.11.0/24`, terhubung lewat Switch ke Router (gateway `192.168.11.1`):
+Topologi terdiri dari 3 entitas utama dalam satu subnet `192.168.11.0/24`
 
 - **Attacker Node** (Kali Linux) — `192.168.11.100`
-- **Target Node** (Ubuntu Server, web app rentan SQLi/XSS) — `192.168.11.5`
-- **Monitoring Node** (Security Onion) — `192.168.11.200`, terhubung via mirror port pada switch untuk memantau seluruh segmen jaringan.
+- **Target Node** (Ubuntu Server, web app rentan SQLi/XSS) — `192.168.11.101`
+- **Monitoring Node** (Security Onion) — `192.168.11.200`
 
 ---
 
@@ -22,9 +22,9 @@ Topologi terdiri dari 3 entitas utama dalam satu subnet `192.168.11.0/24`, terhu
 
 | Node | Hostname | IP Address | OS |
 | --- | --- | --- | --- |
-| Target | SRV-WEB-KEL11 | 192.168.11.5 | Ubuntu Server |
-| Attacker | *(isi hostname)* | 192.168.11.100 | Kali Linux |
-| Monitoring | *(isi hostname)* | 192.168.11.200 | Security Onion |
+| Target | SRV-WEB-KEL11 | 192.168.11.101 | Ubuntu Server |
+| Attacker | Attacker-KEL11 | 192.168.11.100 | Kali Linux |
+| Monitoring | Defender-KEL11 | 192.168.11.200 | Security Onion |
 
 Verifikasi identitas dilakukan dengan:
 ```bash
@@ -85,7 +85,9 @@ Bukti bahwa Security Onion aktif merekam traffic jaringan:
    - IP asal: `192.168.11.100`
    - IP tujuan: `192.168.11.5`
 
-*(Sisipkan screenshot dashboard Sguil/Squert di sini)*
+<img width="1600" height="900" alt="image" src="https://github.com/user-attachments/assets/abb04f8e-90ce-4c22-9e03-0801270f906e" />
+<img width="1600" height="900" alt="image" src="https://github.com/user-attachments/assets/d951a10c-ddf3-4809-b3be-6ab36c422ed6" />
+
 
 ---
 
