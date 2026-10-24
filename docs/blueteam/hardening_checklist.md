@@ -1,33 +1,17 @@
-# Hardening Checklist — Target Node (SRV-WEB-KEL11, 192.168.11.101)
+# Hardening Checklist — Target Node BiliCheck (`192.168.11.101`)
 
-Status per kontrol: **Selesai** / **Sebagian** / **Belum**. Bukti before/after disimpan di `docs/blueteam/evidence/`.
 
-## A. Access & Authentication
-
-| # | Kontrol | Status | Bukti |
-|---|---|---|---|
-| A1 | User non-root (`analyst`, akses via `sudo`) untuk administrasi | Selesai | Screenshot `whoami` + `sudo -l` (sudah ada di baseline report) |
-| A2 | SSH key-based authentication, `PasswordAuthentication no` di `sshd_config` | Belum — rencana sebelum demo | Screenshot `sshd_config` before/after + percobaan login password ditolak |
-
-## B. Service & Attack Surface
-
-| # | Kontrol | Status | Bukti |
-|---|---|---|---|
-| B1 | UFW default deny incoming, whitelist port 22/80/443 | Selesai | `sudo ufw status verbose` (sudah ada di baseline report) |
-| B2 | Nonaktifkan service tidak dipakai (isi nama service aktual, mis. `bluetooth`, `cups`, `avahi-daemon`) | Sebagian — daftar service belum dikonfirmasi di baseline report, perlu dilengkapi | `systemctl list-unit-files --state=enabled` before/after |
-| B3 | Update & patch OS (`apt update && apt upgrade`) | Selesai | Screenshot output upgrade (sudah ada di baseline report) |
-
-## C. Data & Application
-
-> Diterapkan pada script relay/ekspor (replika fungsi VPS BiliCheck) — bukan pada DVWA, yang sengaja dibiarkan *vulnerable* sebagai target Red Team.
-
-| # | Kontrol | Status | Bukti |
-|---|---|---|---|
-| C1 | Kredensial database (MySQL) untuk script ekspor disimpan di `.env`, tidak hardcode di source | Belum | `app/relay-export/.env.example` + pemanggilan `load_dotenv()` di `app.py` |
-| C2 | User MySQL `relay_user` khusus untuk script ekspor dengan least-privilege (bukan `root`) | Belum | `SHOW GRANTS FOR 'relay_user'@'localhost';` |
-| C3 | Validasi input pada endpoint Flask `/pemeriksaan` (bukan form DVWA) | Belum | Blok validasi `pasien_id`/`hasil_bilirubin` di `app/relay-export/app.py` |
-| C4 | Logging aktivitas mencurigakan (percobaan login gagal berulang, dsb.), terhubung ke Security Onion | Sebagian — Security Onion sudah memverifikasi capture traffic ICMP (Minggu 5), log aplikasi spesifik belum ditambahkan | Grep log + screenshot alert Security Onion |
-
-**Ringkasan:** 2 kontrol kategori A, 3 kategori B, 4 kategori C — total 9 kontrol, memenuhi minimum 8 kontrol lintas 3 kategori (≥2 per kategori) sesuai Bagian VIII.
-
-**TODO sebelum presentasi Minggu ke-9:** selesaikan A2 dan isi status B2 dengan daftar service aktual; C1–C4 cukup didemonstrasikan sebagai rencana/progres awal karena penilaian Minggu ke-9 berfokus pada kejelasan rencana, bukan eksekusi penuh (lihat Bagian VII Panduan).
+| ID | Kategori | Kontrol | Target layanan/file | Status sementara | Bukti |
+|---|---|---|---|---|---|
+| A1 | Access & Authentication | Admin memakai akun non-root | Akun Ubuntu, `sudo` | Selesai | [Sebelum](evidence/A1_before.png) · [Sesudah](evidence/A1_after.png) |
+| A2 | Access & Authentication | SSH key; login password dimatikan setelah key teruji | SSH | Belum | [Sebelum](evidence/A2_before.png) · [Sesudah](evidence/A2_after.png) |
+| A3 | Access & Authentication | Fail2ban untuk percobaan SSH berulang | SSH, Fail2ban | Belum | [Sebelum](evidence/A3_before.png) · [Sesudah](evidence/A3_after.png) |
+| A4 | Access & Authentication | Login SSH langsung sebagai root dimatikan | SSH | Belum | [Sebelum](evidence/A4_before.png) · [Sesudah](evidence/A4_after.png) |
+| B1 | Service & Attack Surface | UFW default deny; buka hanya port SSH yang dipakai | UFW | Sebagian | [Sebelum](evidence/B1_before.png) · [Sesudah](evidence/B1_after.png) |
+| B2 | Service & Attack Surface | Firestore Emulator dan UI hanya bind ke `127.0.0.1` | Firestore Emulator | Belum | [Sebelum](evidence/B2_before.png) · [Sesudah](evidence/B2_after.png) |
+| B3 | Service & Attack Surface | Matikan layanan yang tidak dipakai | Layanan Ubuntu | Sebagian | [Sebelum](evidence/B3_before.png) · [Sesudah](evidence/B3_after.png) |
+| B4 | Service & Attack Surface | Perbarui Ubuntu, Node.js, dan dependensi | OS dan paket Node.js | Sebagian | [Sebelum](evidence/B4_before.png) · [Sesudah](evidence/B4_after.png) |
+| C1 | Data & Application | Jalankan ekspor sebagai akun `bilicheck` tanpa hak admin | Proses ekspor | Belum | [Sebelum](evidence/C1_before.png) · [Sesudah](evidence/C1_after.png) |
+| C2 | Data & Application | Folder backup `700`, file CSV `600` | Backup CSV | Belum | [Sebelum](evidence/C2_before.png) · [Sesudah](evidence/C2_after.png) |
+| C3 | Data & Application | Cegah nilai Firestore menjadi formula saat CSV dibuka | `export_csv.js` | Belum | [Sebelum](evidence/C3_before.png) · [Sesudah](evidence/C3_after.png) |
+| C4 | Data & Application | Catat kegagalan ekspor dan percobaan akses file | Log ekspor, audit Ubuntu | Belum | [Sebelum](evidence/C4_before.png) · [Sesudah](evidence/C4_after.png) |
