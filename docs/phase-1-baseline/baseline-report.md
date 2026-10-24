@@ -44,8 +44,9 @@ Firewall (UFW) dikonfigurasi pada Target Node dengan kebijakan default **deny in
 | Port | Layanan | Alasan Dibuka |
 | --- | --- | --- |
 | 22/tcp | SSH | Akses administrasi jarak jauh |
-| 80/tcp | HTTP | Layanan web server utama |
+| 80/tcp | HTTP | Layanan web server utama (DVWA) |
 | 443/tcp | HTTPS | Layanan web server terenkripsi |
+| 5000/tcp | HTTP (internal) | Komponen replika VPS relay/ekspor (Flask) — lihat `docs/presentation-minggu9/tech_stack_declaration.md` |
 
 Konfigurasi diverifikasi dengan:
 ```bash
@@ -58,7 +59,7 @@ sudo ufw status verbose
 
 ## 4. System Hardening
 
-- **Penonaktifan service tidak perlu:** *(sebutkan service apa saja yang di-disable, misal: bluetooth, cups, avahi-daemon)*
+- **Penonaktifan service tidak perlu:** dicek dengan `systemctl list-unit-files --type=service --state=enabled`, lalu dinonaktifkan jika ditemukan: `avahi-daemon`, `cups`, `bluetooth`, `ModemManager`, `motd-news.timer`/`apt-news.timer`.
 - **User non-root:** dibuat user `analyst` dengan hak akses sudo, bukan login langsung sebagai root.
 - **Update security patch:**
   ```bash
@@ -79,12 +80,12 @@ Bukti bahwa Security Onion aktif merekam traffic jaringan:
 
 1. Traffic ICMP di-generate dari Attacker Node ke Target Node:
    ```bash
-   ping -c 5 192.168.11.5
+   ping -c 5 192.168.11.101
    ```
 2. Dashboard **Sguil/Squert** di Security Onion menampilkan event dengan:
-   - Timestamp: *(isi)*
+   - Timestamp: *(isi sesuai screenshot kalian)*
    - IP asal: `192.168.11.100`
-   - IP tujuan: `192.168.11.5`
+   - IP tujuan: `192.168.11.101`
 
 <img width="1600" height="900" alt="image" src="https://github.com/user-attachments/assets/abb04f8e-90ce-4c22-9e03-0801270f906e" />
 <img width="1600" height="900" alt="image" src="https://github.com/user-attachments/assets/d951a10c-ddf3-4809-b3be-6ab36c422ed6" />
@@ -95,3 +96,5 @@ Bukti bahwa Security Onion aktif merekam traffic jaringan:
 ## 6. Kesimpulan Hardening
 
 Berdasarkan hasil di atas, sistem Target Node (SRV-WEB-KEL11) telah diperkuat sebelum memasuki fase simulasi serangan: firewall aktif membatasi akses hanya pada port yang diperlukan, service yang tidak digunakan telah dinonaktifkan, akses administrasi menggunakan user non-root, dan Security Onion telah terverifikasi mampu merekam aktivitas jaringan secara real-time. Sistem dinyatakan siap untuk memasuki Fase 2 (Vulnerability Assessment).
+
+**Catatan Minggu ke-9:** hardening kategori Data & Application (kredensial di `.env`, least-privilege DB user, validasi input, logging aktivitas mencurigakan) ditambahkan pada komponen replika VPS relay/ekspor (Flask, port 5000) — detail status per kontrol ada di `docs/blueteam/hardening_checklist.md`.

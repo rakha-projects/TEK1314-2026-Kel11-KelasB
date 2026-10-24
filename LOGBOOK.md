@@ -1,6 +1,6 @@
 # LOGBOOK — Kelompok 11 (TEK1314 Keamanan Siber)
 
-**Skenario Proyek:** Simulasi serangan web server (SQL Injection & XSS) — Attacker Kali Linux vs Target Ubuntu Server, dipantau Security Onion.
+**Skenario Proyek:** Simulasi serangan web server (SQL Injection & XSS) — Attacker Kali Linux vs Target Ubuntu Server, dipantau Security Onion. Target Node mereplikasi komponen backend self-hosted dari proyek IoT BiliCheck (VPS relay/ekspor).
 
 ---
 
@@ -24,3 +24,14 @@
 ## Minggu 7
 - Finalisasi Baseline Report (`docs/phase-1-baseline/baseline-report.md`).
 - Persiapan demo progres: topologi review, hardening walkthrough, logging verification live.
+
+## Minggu 8 — UTS Praktikum
+- Tidak ada aktivitas proyek PBL (jadwal UTS).
+
+## Minggu 9 — Case Study & Checkpoint
+- Menyusun Deklarasi Tech Stack (`docs/presentation-minggu9/tech_stack_declaration.md`): memetakan backend self-hosted proyek IoT BiliCheck (VPS relay/ekspor: Ubuntu + HTTP + penyimpanan terstruktur) ke Target Node replika (DVWA untuk permukaan serangan web + komponen Flask tambahan untuk lapisan data/aplikasi).
+- Menambahkan komponen replika VPS relay/ekspor berbasis Flask (`app/relay-export/`), terpisah dari DVWA, untuk memenuhi kontrol hardening kategori Data & Application.
+- Menyusun checklist hardening terstruktur (`docs/blueteam/hardening_checklist.md`), 9 kontrol lintas kategori A/B/C.
+- Menyusun Attack Plan Fase 2 (`docs/redteam/attack_plan.md`): 3 skenario lintas kategori (Reconnaissance, Exploitation/Akses, Web/API/Protokol IoT).
+- Memperbaiki `baseline-report.md`: melengkapi daftar service yang dinonaktifkan, memperbaiki inkonsistensi IP target pada bagian Logging Verification.
+- Persiapan slide presentasi checkpoint Minggu ke-9 (maks. 6–8 slide sesuai Bagian IV Panduan PBL).
