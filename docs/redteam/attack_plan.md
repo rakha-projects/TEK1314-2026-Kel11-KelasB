@@ -44,6 +44,8 @@ Kali → Ubuntu                         Security Onion memantau traffic lab
 
 **Temuan bila berhasil:** port atau layanan yang tidak diperlukan dapat diakses dari Kali. Hasil scan juga menjadi dasar memilih target uji berikutnya.
 
+**Deteksi:** traffic scanning (SYN/connect scan) terlihat oleh Security Onion sebagai NIDS alert — jalur deteksi normal via jaringan.
+
 ### S2 — Percobaan login SSH
 
 **Hipotesis:** bila login password masih aktif pada akun dummy, percobaan berulang mungkin memperoleh akses atau tidak dibatasi.
@@ -55,6 +57,8 @@ Kali → Ubuntu                         Security Onion memantau traffic lab
 
 **Temuan bila berhasil:** akun dummy dapat dimasuki tanpa izin, atau percobaan berulang tetap diterima tanpa pembatasan.
 
+**Deteksi:** percobaan login berulang dari satu IP terlihat oleh Security Onion sebagai NIDS alert (traffic SSH berulang) — jalur deteksi normal via jaringan.
+
 ### S3 — Formula pada hasil ekspor CSV
 
 **Hipotesis:** nilai teks dari Firestore yang diawali `=` dapat ditulis apa adanya ke CSV dan dibaca spreadsheet sebagai formula.
@@ -65,6 +69,8 @@ Kali → Ubuntu                         Security Onion memantau traffic lab
 3. Buka CSV di LibreOffice Calc dan lihat apakah sel tersebut tampil sebagai teks `=1+1` atau dihitung menjadi `2`.
 
 **Temuan bila berhasil:** nilai yang semestinya data pasien diproses sebagai formula. Uji memakai formula aritmetika ini saja, tanpa pengambilan data atau perintah lain.
+
+**Catatan deteksi — PENTING:** skenario ini dijalankan lewat sesi SSH yang sah (bukan serangan via jaringan terbuka), sehingga **tidak akan muncul sebagai NIDS alert di Security Onion**. Deteksi untuk skenario ini harus memakai **log aplikasi/host** (log proses ekspor Node.js, atau audit log Ubuntu pada akses file CSV/Firestore Emulator) — bukan traffic jaringan. Blue Team perlu menyiapkan jalur deteksi berbasis log, bukan hanya alert NIDS, untuk skenario S3.
 
 ## 5. Hal yang perlu dicek sebelum eksekusi
 

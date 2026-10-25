@@ -1,7 +1,7 @@
 # Baseline Report — Kelompok 11 (Fase 1: Hardening)
 
 **Mata Kuliah:** TEK1314 - Keamanan Siber
-**Skenario:** Simulasi serangan web server (SQL Injection & XSS)
+**Skenario:** SOC Engagement — replika VPS backend BiliCheck (Node.js export script + Firestore Emulator)
 **Minggu:** 7 (Demo Progres — Hardening Review)
 
 ---
@@ -10,11 +10,10 @@
 
 <img width="424" height="343" alt="image" src="https://github.com/user-attachments/assets/5e99c375-b2be-49ce-afd1-476679236789" />
 
-
 Topologi terdiri dari 3 entitas utama dalam satu subnet `192.168.11.0/24`
 
 - **Attacker Node** (Kali Linux) — `192.168.11.100`
-- **Target Node** (Ubuntu Server, web app rentan SQLi/XSS) — `192.168.11.101`
+- **Target Node** (Ubuntu Server, replika VPS BiliCheck: Node.js export script + Firestore Emulator) — `192.168.11.101`
 - **Monitoring Node** (Security Onion) — `192.168.11.200`
 
 ---
@@ -34,19 +33,15 @@ ip a
 ```
 <img width="1917" height="1077" alt="image" src="https://github.com/user-attachments/assets/b79dcc9e-282d-4bab-86e7-1b52acf36cea" />
 
-
 ---
 
 ## 3. Network Hardening
 
-Firewall (UFW) dikonfigurasi pada Target Node dengan kebijakan default **deny incoming**, hanya membuka port yang diperlukan untuk operasional web server:
+Firewall (UFW) dikonfigurasi pada Target Node dengan kebijakan default **deny incoming**. Karena VPS BiliCheck asli bersifat headless (tanpa dashboard/API HTTP masuk), hanya SSH yang perlu dibuka dari luar; Firestore Emulator hanya bind ke `127.0.0.1` (lihat `docs/blueteam/hardening_checklist.md` kontrol B2), bukan port yang diizinkan UFW dari luar:
 
 | Port | Layanan | Alasan Dibuka |
 | --- | --- | --- |
 | 22/tcp | SSH | Akses administrasi jarak jauh |
-| 80/tcp | HTTP | Layanan web server utama (DVWA) |
-| 443/tcp | HTTPS | Layanan web server terenkripsi |
-| 5000/tcp | HTTP (internal) | Komponen replika VPS relay/ekspor (Flask) — lihat `docs/presentation-minggu9/tech_stack_declaration.md` |
 
 Konfigurasi diverifikasi dengan:
 ```bash
@@ -54,12 +49,11 @@ sudo ufw status verbose
 ```
 <img width="1917" height="1077" alt="image" src="https://github.com/user-attachments/assets/11d9695b-9218-4360-b7ce-abd2341089e6" />
 
-
 ---
 
 ## 4. System Hardening
 
-- **Penonaktifan service tidak perlu:** dicek dengan `systemctl list-unit-files --type=service --state=enabled`, lalu dinonaktifkan jika ditemukan: `avahi-daemon`, `cups`, `bluetooth`, `ModemManager`, `motd-news.timer`/`apt-news.timer`.
+- **Penonaktifan service tidak perlu:** dicek dengan `systemctl list-unit-files --type=service --state=enabled`, lalu dinonaktifkan jika ditemukan: `avahi-daemon`, `cups`, `bluetooth`, `ModemManager`, `motd-news.timer`/`apt-news.timer`. *(Sesuaikan dengan hasil aktual di VM kalian.)*
 - **User non-root:** dibuat user `analyst` dengan hak akses sudo, bukan login langsung sebagai root.
 - **Update security patch:**
   ```bash
@@ -69,8 +63,6 @@ sudo ufw status verbose
 <img width="1917" height="1077" alt="image" src="https://github.com/user-attachments/assets/04be2e3c-59ea-41cf-be86-287aeea0ee1d" />
 
 <img width="1917" height="1077" alt="image" src="https://github.com/user-attachments/assets/fc9da532-d6a8-4318-a5f8-53b014601473" />
-
-
 
 ---
 
@@ -90,11 +82,10 @@ Bukti bahwa Security Onion aktif merekam traffic jaringan:
 <img width="1600" height="900" alt="image" src="https://github.com/user-attachments/assets/abb04f8e-90ce-4c22-9e03-0801270f906e" />
 <img width="1600" height="900" alt="image" src="https://github.com/user-attachments/assets/d951a10c-ddf3-4809-b3be-6ab36c422ed6" />
 
-
 ---
 
 ## 6. Kesimpulan Hardening
 
-Berdasarkan hasil di atas, sistem Target Node (SRV-WEB-KEL11) telah diperkuat sebelum memasuki fase simulasi serangan: firewall aktif membatasi akses hanya pada port yang diperlukan, service yang tidak digunakan telah dinonaktifkan, akses administrasi menggunakan user non-root, dan Security Onion telah terverifikasi mampu merekam aktivitas jaringan secara real-time. Sistem dinyatakan siap untuk memasuki Fase 2 (Vulnerability Assessment).
+Berdasarkan hasil di atas, sistem Target Node (SRV-WEB-KEL11) telah diperkuat sebelum memasuki fase simulasi serangan: firewall aktif hanya membuka SSH dari luar, Firestore Emulator dibatasi ke `localhost`, service yang tidak digunakan telah dinonaktifkan, akses administrasi menggunakan user non-root, dan Security Onion telah terverifikasi mampu merekam aktivitas jaringan secara real-time. Sistem dinyatakan siap untuk memasuki Fase 2 (Vulnerability Assessment).
 
-**Catatan Minggu ke-9:** hardening kategori Data & Application (kredensial di `.env`, least-privilege DB user, validasi input, logging aktivitas mencurigakan) ditambahkan pada komponen replika VPS relay/ekspor (Flask, port 5000) — detail status per kontrol ada di `docs/blueteam/hardening_checklist.md`.
+**Catatan Minggu ke-9:** hardening kategori Data & Application (akun proses ekspor tanpa hak admin, permission file backup, pencegahan formula injection pada CSV, logging kegagalan ekspor) didetailkan di `docs/blueteam/hardening_checklist.md`. Skenario serangan terkait ada di `docs/redteam/attack_plan.md`, termasuk catatan bahwa skenario formula injection (S3) terdeteksi lewat log aplikasi/host, bukan NIDS Security Onion.
